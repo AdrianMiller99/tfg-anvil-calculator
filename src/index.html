@@ -2,11 +2,93 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>index</title>
-  <script src="calc.js"></script>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TFG Calculator</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<h1>Welcome to the TFG Anvil Calculator</h1>
+<div class="container">
+  <h1>Welcome to the TFG Calculator</h1>
+
+  <label for="target-value">Target Value:</label>
+  <input type="number" id="target-value" />
+
+  <h3>Instructions:</h3>
+  <div id="instructions">
+    <div class="instruction-set">
+      <select class="action">
+        <option value="punch">Punch</option>
+        <option value="bend">Bend</option>
+        <option value="upset">Upset</option>
+        <option value="shrink">Shrink</option>
+        <option value="hit1">Hit 1</option>
+        <option value="hit2">Hit 2</option>
+        <option value="hit3">Hit 3</option>
+        <option value="draw">Draw</option>
+      </select>
+      <select class="priority">
+        <option value="last">Last</option>
+        <option value="second-last">Second Last</option>
+        <option value="third-last">Third Last</option>
+        <option value="not-last">Not Last</option>
+        <option value="any">Any</option>
+      </select>
+    </div>
+    <div class="instruction-set">
+      <select class="action">
+        <option value="punch">Punch</option>
+        <option value="bend">Bend</option>
+        <option value="upset">Upset</option>
+        <option value="shrink">Shrink</option>
+        <option value="hit1">Hit 1</option>
+        <option value="hit2">Hit 2</option>
+        <option value="hit3">Hit 3</option>
+        <option value="draw">Draw</option>
+      </select>
+      <select class="priority">
+        <option value="last">Last</option>
+        <option value="second-last">Second Last</option>
+        <option value="third-last">Third Last</option>
+        <option value="not-last">Not Last</option>
+        <option value="any">Any</option>
+      </select>
+    </div>
+    <div class="instruction-set">
+      <select class="action">
+        <option value="punch">Punch</option>
+        <option value="bend">Bend</option>
+        <option value="upset">Upset</option>
+        <option value="shrink">Shrink</option>
+        <option value="hit1">Hit 1</option>
+        <option value="hit2">Hit 2</option>
+        <option value="hit3">Hit 3</option>
+        <option value="draw">Draw</option>
+      </select>
+      <select class="priority">
+        <option value="last">Last</option>
+        <option value="second-last">Second Last</option>
+        <option value="third-last">Third Last</option>
+        <option value="not-last">Not Last</option>
+        <option value="any">Any</option>
+      </select>
+    </div>
+  </div>
+
+  <button id="calculate-button">Calculate</button>
+
+  <div id="result">
+    <h3>Result:</h3>
+    <div id="setup">
+      <h4>Setup:</h4>
+      <p id="setup-actions"></p>
+    </div>
+    <div id="final-instructions">
+      <h4>Finally:</h4>
+      <p id="final-actions"></p>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>

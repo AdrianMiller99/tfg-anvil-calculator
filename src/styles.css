@@ -1,0 +1,42 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  width: 50%;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #000;
+  text-align: center;
+}
+
+label {
+  font-weight: bold;
+}
+
+#instructions {
+  margin-bottom: 20px;
+}
+
+.instruction-set {
+  margin-bottom: 10px;
+}
+
+select {
+  padding: 5px;
+  font-size: 14px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#result {
+  margin-top: 20px;
+}
+
+h3, h4 {
+  margin-bottom: 10px;
+}
