@@ -1,12 +1,14 @@
 document.getElementById("calculate-button").addEventListener("click", function() {
   const targetValue = parseInt(document.getElementById("target-value").value);
 
-  // Collect instructions
+  // Collect and filter instructions
   const instructions = [];
   document.querySelectorAll(".instruction-set").forEach((set) => {
     const action = set.querySelector(".action").value;
     const priority = set.querySelector(".priority").value;
-    instructions.push({ action, priority });
+    if (action && priority) {
+      instructions.push({ action, priority });
+    }
   });
   console.log("Instructions:", instructions);
 
