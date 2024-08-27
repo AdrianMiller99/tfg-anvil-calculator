@@ -1,53 +1,114 @@
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Poppins', sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+  margin: 0;
+  padding: 0;
 }
 
 .container {
-  width: 50%;
-  margin: auto;
   padding: 20px;
-  border: 1px solid #000;
-  text-align: center;
+  max-width: 1000px;
+  margin: auto;
+  transition: filter 0.3s ease;
 }
 
-label {
-  font-weight: bold;
-}
-
-#instructions {
+.app-header {
   display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.instruction-set {
+.app-header .logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #555;
+}
+
+.app-header nav a {
   margin: 0 10px;
-  text-align: center;
+  color: #777;
+  text-decoration: none;
+  font-weight: 500;
 }
 
-.action-icon {
-  width: 128px;
-  height: 128px;
-  cursor: pointer;
+.card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 20px 0;
 }
 
-select {
-  padding: 5px;
-  font-size: 14px;
+h2, h3 {
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 10px;
 }
 
 button {
-  padding: 10px 20px;
-  font-size: 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 20px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin: 5px;
 }
 
-#result {
-  margin-top: 20px;
+button:hover {
+  background-color: #0056b3;
 }
 
-h3, h4 {
-  margin-bottom: 10px;
+.input-field {
+  padding: 10px;
+  margin-top: 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+/* Adjusting image size within the instruction section */
+.instruction-set .action-icon {
+  width: 64px;
+  height: 64px;
+}
+
+.actions-container img {
+  width: 64px;
+  height: 64px;
+  margin: 5px;
+}
+
+select {
+  padding: 10px;
+  margin-top: 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.instruction-set {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.instruction-set img {
+  margin-right: 10px;
+}
+
+.action-icon {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.action-icon:hover {
+  transform: scale(1.1);
 }
 
 #action-popup {
@@ -55,23 +116,50 @@ h3, h4 {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: white;
-  border: 2px solid #000;
+  background-color: #fff;
   padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 1000;
+  width: 90%;
+  max-width: 400px;
 }
 
-.hidden {
+#action-popup.hidden {
   display: none;
 }
 
-.action-popup-content {
-  text-align: center;
+#action-popup .action-popup-content h3 {
+  margin-bottom: 20px;
 }
 
-.popup-action-icon {
+/* Adjusting image size within the popup */
+#action-popup .action-options img {
   width: 64px;
   height: 64px;
-  margin: 10px;
+  margin: 5px;
   cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+#action-popup .action-options img:hover {
+  transform: scale(1.1);
+}
+
+.popup-button {
+  float: right;
+}
+
+/* Blur everything except the popup */
+.blurred {
+  filter: blur(5px);
+  pointer-events: none;
+}
+
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+  #action-popup {
+    width: 80%;
+    max-width: 80%;
+  }
 }

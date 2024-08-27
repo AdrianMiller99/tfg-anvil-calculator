@@ -1,3 +1,28 @@
+// Helper function to create an image element for a given action
+function createActionImage(action) {
+  const img = document.createElement("img");
+  img.src = `/res/${action}.png`;  // Assuming all images are named after the action
+  img.alt = action;
+
+  // Capitalize the first letter of the action for the tooltip
+  const capitalizedAction = action.charAt(0).toUpperCase() + action.slice(1);
+  img.title = capitalizedAction;
+
+  img.classList.add("result-icon");  // Add a class for potential styling
+  return img;
+}
+
+// Function to apply tooltips to existing action icons in the instruction set and popup
+function applyTooltipToIcon(iconElement) {
+  const action = iconElement.getAttribute("data-action");
+  if (action) {
+    const capitalizedAction = action.charAt(0).toUpperCase() + action.slice(1);
+    iconElement.title = capitalizedAction;
+  } else if (action === "") {
+    iconElement.title = "None";
+  }
+}
+
 document.getElementById("calculate-button").addEventListener("click", function() {
   const targetValue = parseInt(document.getElementById("target-value").value);
 
@@ -123,17 +148,34 @@ document.getElementById("calculate-button").addEventListener("click", function()
   const sortedInstructions = sortInstructions(instructions);
   console.log("Final Instructions:", sortedInstructions.map(i => i.action).join(", "));
 
-  document.getElementById("setup-actions").innerText = setupActions.join(", ");
-  document.getElementById("final-actions").innerText = sortedInstructions.map(i => i.action).join(", ");
+  // Display results as images
+  const setupContainer = document.getElementById("setup-actions");
+  const finalContainer = document.getElementById("final-actions");
+
+  // Clear previous results
+  setupContainer.innerHTML = "";
+  finalContainer.innerHTML = "";
+
+  // Append setup actions as images
+  setupActions.forEach(action => {
+    setupContainer.appendChild(createActionImage(action));
+  });
+
+  // Append final instructions as images
+  sortedInstructions.forEach(instr => {
+    finalContainer.appendChild(createActionImage(instr.action));
+  });
 });
 
 // Single function to manage icon selection
 function setupInstructionListener(selector) {
   const icon = document.querySelector(selector + ' .action-icon');
+  const container = document.querySelector('.container');
   icon.addEventListener('click', function() {
     const currentIcon = this;
     const popup = document.getElementById('action-popup');
     popup.classList.remove('hidden');
+    container.classList.add('blurred');
 
     // Remove all existing listeners on popup icons
     document.querySelectorAll('.popup-action-icon').forEach(popupIcon => {
@@ -142,20 +184,32 @@ function setupInstructionListener(selector) {
 
     // Add listener to popup icons for the current selection
     document.querySelectorAll('.popup-action-icon').forEach(popupIcon => {
+      // Apply tooltip to each popup icon
+      applyTooltipToIcon(popupIcon);
+
       popupIcon.onclick = function() {
         currentIcon.src = this.src;
         currentIcon.setAttribute('data-action', this.getAttribute('data-action'));
         popup.classList.add('hidden');
+        container.classList.remove('blurred');
+
+        // Apply tooltip to the selected icon in the instruction set
+        applyTooltipToIcon(currentIcon);
       };
     });
 
     document.getElementById('close-popup').onclick = function() {
       popup.classList.add('hidden');
+      container.classList.remove('blurred');
     };
   });
+
+  // Apply tooltip to the instruction set icon on load
+  applyTooltipToIcon(icon);
 }
 
 // Apply listeners to each instruction set
 setupInstructionListener('.instruction-set-1');
 setupInstructionListener('.instruction-set-2');
 setupInstructionListener('.instruction-set-3');
+
