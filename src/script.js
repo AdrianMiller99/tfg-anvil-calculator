@@ -22,9 +22,36 @@ document.getElementById("calculate-button").addEventListener("click", function()
     draw: -15
   };
 
+  // Function to find the best "hit" tier for the given context
+  function selectBestHit(preTargetValue, remainingHits) {
+    let bestHitAction = null;
+    let minActions = Infinity;
+
+    remainingHits.forEach(hit => {
+      const hitValue = actions[hit];
+      const actionsNeeded = Math.ceil(preTargetValue / hitValue);
+      if (actionsNeeded < minActions && (preTargetValue % hitValue === 0 || preTargetValue + hitValue <= targetValue)) {
+        minActions = actionsNeeded;
+        bestHitAction = hit;
+      }
+    });
+
+    return bestHitAction;
+  }
+
   function calculateSetupActions(targetValue, instructions) {
-    // Calculate the sum of instruction values
-    let instructionSum = instructions.reduce((sum, instr) => sum + actions[instr.action], 0);
+    // Calculate the sum of instruction values, adjusting for flexible hits
+    let instructionSum = 0;
+    instructions.forEach(instr => {
+      if (instr.action === "hit") {
+        const bestHit = selectBestHit(targetValue - instructionSum, ["hit1", "hit2", "hit3"]);
+        instructionSum += actions[bestHit];
+        instr.action = bestHit; // Replace "hit" with the best specific hit tier
+      } else {
+        instructionSum += actions[instr.action];
+      }
+    });
+
     console.log("Instruction Sum:", instructionSum);
     let preTargetValue = targetValue - instructionSum;
     console.log("Pre-Target Value:", preTargetValue);
