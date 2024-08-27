@@ -15,11 +15,20 @@ label {
 }
 
 #instructions {
+  display: flex;
+  justify-content: center;
   margin-bottom: 20px;
 }
 
 .instruction-set {
-  margin-bottom: 10px;
+  margin: 0 10px;
+  text-align: center;
+}
+
+.action-icon {
+  width: 128px;
+  height: 128px;
+  cursor: pointer;
 }
 
 select {
@@ -39,4 +48,30 @@ button {
 
 h3, h4 {
   margin-bottom: 10px;
+}
+
+#action-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border: 2px solid #000;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.hidden {
+  display: none;
+}
+
+.action-popup-content {
+  text-align: center;
+}
+
+.popup-action-icon {
+  width: 64px;
+  height: 64px;
+  margin: 10px;
+  cursor: pointer;
 }

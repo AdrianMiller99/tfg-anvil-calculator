@@ -3,28 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TFG Calculator</title>
+  <title>TFG Anvil Calculator</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div class="container">
-  <h1>Welcome to the TFG Calculator</h1>
+  <h1>Welcome to the TFG Anvil Calculator</h1>
 
   <label for="target-value">Target Value:</label>
   <input type="number" id="target-value" />
 
-  <h3>Instructions:</h3>
+  <h3>Smithing Instructions</h3>
   <div id="instructions">
-    <div class="instruction-set">
-      <select class="action">
-        <option value="">None</option>
-        <option value="punch">Punch</option>
-        <option value="bend">Bend</option>
-        <option value="upset">Upset</option>
-        <option value="shrink">Shrink</option>
-        <option value="hit">Hit</option>
-        <option value="draw">Draw</option>
-      </select>
+    <div class="instruction-set-1">
+      <img src="/res/empty.png" class="action-icon" alt="None" data-action="">
       <select class="priority">
         <option value="">None</option>
         <option value="last">Last</option>
@@ -34,16 +26,8 @@
         <option value="any">Any</option>
       </select>
     </div>
-    <div class="instruction-set">
-      <select class="action">
-        <option value="">None</option>
-        <option value="punch">Punch</option>
-        <option value="bend">Bend</option>
-        <option value="upset">Upset</option>
-        <option value="shrink">Shrink</option>
-        <option value="hit">Hit</option>
-        <option value="draw">Draw</option>
-      </select>
+    <div class="instruction-set-2">
+      <img src="/res/empty.png" class="action-icon" alt="None" data-action="">
       <select class="priority">
         <option value="">None</option>
         <option value="last">Last</option>
@@ -53,16 +37,8 @@
         <option value="any">Any</option>
       </select>
     </div>
-    <div class="instruction-set">
-      <select class="action">
-        <option value="">None</option>
-        <option value="punch">Punch</option>
-        <option value="bend">Bend</option>
-        <option value="upset">Upset</option>
-        <option value="shrink">Shrink</option>
-        <option value="hit">Hit</option>
-        <option value="draw">Draw</option>
-      </select>
+    <div class="instruction-set-3">
+      <img src="/res/empty.png" class="action-icon" alt="None" data-action="">
       <select class="priority">
         <option value="">None</option>
         <option value="last">Last</option>
@@ -85,6 +61,23 @@
     <div id="final-instructions">
       <h4>Finally:</h4>
       <p id="final-actions"></p>
+    </div>
+  </div>
+
+  <!-- Action Selection Popup -->
+  <div id="action-popup" class="hidden">
+    <div class="action-popup-content">
+      <h3>Select an Action</h3>
+      <div class="action-options">
+        <img src="/res/punch.png" class="popup-action-icon" alt="Punch" data-action="punch">
+        <img src="/res/bend.png" class="popup-action-icon" alt="Bend" data-action="bend">
+        <img src="/res/upset.png" class="popup-action-icon" alt="Upset" data-action="upset">
+        <img src="/res/shrink.png" class="popup-action-icon" alt="Shrink" data-action="shrink">
+        <img src="/res/hit.png" class="popup-action-icon" alt="Hit 1" data-action="hit">
+        <img src="/res/draw.png" class="popup-action-icon" alt="Draw" data-action="draw">
+        <img src="/res/empty.png" class="popup-action-icon" alt="None" data-action="">
+      </div>
+      <button id="close-popup">Close</button>
     </div>
   </div>
 

@@ -3,8 +3,9 @@ document.getElementById("calculate-button").addEventListener("click", function()
 
   // Collect and filter instructions
   const instructions = [];
-  document.querySelectorAll(".instruction-set").forEach((set) => {
-    const action = set.querySelector(".action").value;
+  document.querySelectorAll("[class^='instruction-set']").forEach((set) => {
+    const actionElement = set.querySelector(".action-icon");
+    const action = actionElement.getAttribute("data-action");
     const priority = set.querySelector(".priority").value;
     if (action && priority) {
       instructions.push({ action, priority });
@@ -24,7 +25,6 @@ document.getElementById("calculate-button").addEventListener("click", function()
     draw: -15
   };
 
-  // Function to find the best "hit" tier for the given context
   function selectBestHit(preTargetValue, remainingHits) {
     let bestHitAction = null;
     let minActions = Infinity;
@@ -42,13 +42,12 @@ document.getElementById("calculate-button").addEventListener("click", function()
   }
 
   function calculateSetupActions(targetValue, instructions) {
-    // Calculate the sum of instruction values, adjusting for flexible hits
     let instructionSum = 0;
     instructions.forEach(instr => {
       if (instr.action === "hit") {
         const bestHit = selectBestHit(targetValue - instructionSum, ["hit1", "hit2", "hit3"]);
         instructionSum += actions[bestHit];
-        instr.action = bestHit; // Replace "hit" with the best specific hit tier
+        instr.action = bestHit;
       } else {
         instructionSum += actions[instr.action];
       }
@@ -58,11 +57,9 @@ document.getElementById("calculate-button").addEventListener("click", function()
     let preTargetValue = targetValue - instructionSum;
     console.log("Pre-Target Value:", preTargetValue);
 
-    // Initialize dp array to handle up to preTargetValue
     const dp = Array(preTargetValue + 1).fill(Infinity);
-    dp[0] = 0; // Starting point at 0
+    dp[0] = 0;
 
-    // Dynamic Programming: Populate dp table
     for (let i = 0; i <= preTargetValue; i++) {
       if (dp[i] !== Infinity) {
         for (let action in actions) {
@@ -74,7 +71,6 @@ document.getElementById("calculate-button").addEventListener("click", function()
       }
     }
 
-    // Backtrack to find the most efficient sequence of actions
     let setupActions = [];
     let currentValue = preTargetValue;
 
@@ -89,33 +85,23 @@ document.getElementById("calculate-button").addEventListener("click", function()
       }
     }
 
-    // The setupActions array now holds the most efficient sequence in reverse order
     setupActions.reverse();
 
     return setupActions;
   }
 
-  // Sort instructions based on priority for the "Finally" section
   function sortInstructions(instructions) {
-    // Separate instructions into different priority categories
     const last = instructions.filter(i => i.priority === 'last');
     const secondLast = instructions.filter(i => i.priority === 'second-last');
     const thirdLast = instructions.filter(i => i.priority === 'third-last');
     const notLast = instructions.filter(i => i.priority === 'not-last');
     const anyPriority = instructions.filter(i => i.priority === 'any');
 
-    // Combine them in order of priority
     let sortedInstructions = [...thirdLast, ...secondLast, ...notLast, ...last];
 
-    // Handle "any" priority for hits
     if (anyPriority.length > 0) {
-      // If "any" actions exist, determine where to insert them
       const anyHits = anyPriority.map(i => i);
 
-      // Determine the correct insertion point:
-      // If there's a "last" and "second last", "any" must be third last
-      // If there's only "last", "any" must be second last
-      // If neither, "any" can be anywhere before the "last" actions
       let insertionPoint = 0;
       if (last.length > 0 && secondLast.length > 0) {
         insertionPoint = sortedInstructions.length - last.length - secondLast.length;
@@ -137,7 +123,39 @@ document.getElementById("calculate-button").addEventListener("click", function()
   const sortedInstructions = sortInstructions(instructions);
   console.log("Final Instructions:", sortedInstructions.map(i => i.action).join(", "));
 
-  // Display results
   document.getElementById("setup-actions").innerText = setupActions.join(", ");
   document.getElementById("final-actions").innerText = sortedInstructions.map(i => i.action).join(", ");
 });
+
+// Single function to manage icon selection
+function setupInstructionListener(selector) {
+  const icon = document.querySelector(selector + ' .action-icon');
+  icon.addEventListener('click', function() {
+    const currentIcon = this;
+    const popup = document.getElementById('action-popup');
+    popup.classList.remove('hidden');
+
+    // Remove all existing listeners on popup icons
+    document.querySelectorAll('.popup-action-icon').forEach(popupIcon => {
+      popupIcon.onclick = null;
+    });
+
+    // Add listener to popup icons for the current selection
+    document.querySelectorAll('.popup-action-icon').forEach(popupIcon => {
+      popupIcon.onclick = function() {
+        currentIcon.src = this.src;
+        currentIcon.setAttribute('data-action', this.getAttribute('data-action'));
+        popup.classList.add('hidden');
+      };
+    });
+
+    document.getElementById('close-popup').onclick = function() {
+      popup.classList.add('hidden');
+    };
+  });
+}
+
+// Apply listeners to each instruction set
+setupInstructionListener('.instruction-set-1');
+setupInstructionListener('.instruction-set-2');
+setupInstructionListener('.instruction-set-3');
