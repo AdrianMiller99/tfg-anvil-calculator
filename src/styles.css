@@ -42,6 +42,21 @@ body {
   padding: 20px;
   margin: 20px 0;
 }
+.result-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 20px 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.result-card.visible {
+  opacity: 1;
+  visibility: visible;
+}
 
 h2, h3 {
   color: #333;

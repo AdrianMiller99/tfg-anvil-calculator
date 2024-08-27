@@ -165,6 +165,10 @@ document.getElementById("calculate-button").addEventListener("click", function()
   sortedInstructions.forEach(instr => {
     finalContainer.appendChild(createActionImage(instr.action));
   });
+
+  // Show the result card with a transition
+  const resultCard = document.getElementById("result");
+  resultCard.classList.add("visible");
 });
 
 // Single function to manage icon selection
@@ -212,4 +216,3 @@ function setupInstructionListener(selector) {
 setupInstructionListener('.instruction-set-1');
 setupInstructionListener('.instruction-set-2');
 setupInstructionListener('.instruction-set-3');
-
