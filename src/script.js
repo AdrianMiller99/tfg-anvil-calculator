@@ -1,7 +1,7 @@
 // Helper function to create an image element for a given action
 function createActionImage(action) {
   const img = document.createElement("img");
-  img.src = `/res/${action}.png`;  // Assuming all images are named after the action
+  img.src = `../res/${action}.png`;  // Assuming all images are named after the action
   img.alt = action;
 
   // Capitalize the first letter of the action for the tooltip
