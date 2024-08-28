@@ -6,9 +6,7 @@ const lightModeIcon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="#33
 
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Set dark mode as default
-  document.body.classList.add('dark-mode');
-  document.getElementById('mode-toggle-checkbox').checked = true;
+  initializeMode();
 
   // Reset all other elements
   document.querySelectorAll('.action-icon').forEach(icon => {
@@ -22,30 +20,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
   document.getElementById('target-value').value = '';
   document.getElementById('result').classList.remove('visible');
-  updateModeIcon();
 });
 
-// Add event listener for the dark mode toggle switch
-/*document.getElementById('mode-toggle-checkbox').addEventListener('change', function () {
-  if (this.checked) {
-    document.body.classList.remove('light-mode');
-    document.body.classList.add('dark-mode');
-  } else {
-    document.body.classList.remove('dark-mode');
-    document.body.classList.add('light-mode');
-  }
-  // Save the current mode to localStorage
-  localStorage.setItem('darkMode', this.checked);
-});*/
+// Event listener for the dark mode toggle switch
 document.getElementById('mode-toggle-checkbox').addEventListener('change', function () {
   if (this.checked) {
     document.body.classList.remove('light-mode');
     document.body.classList.add('dark-mode');
+    localStorage.setItem('darkMode', 'true');
   } else {
     document.body.classList.remove('dark-mode');
     document.body.classList.add('light-mode');
+    localStorage.setItem('darkMode', 'false');
   }
-  updateModeIcon(); // We'll define this function later
+  updateModeIcon();
 });
 
 // Function to update the mode icon
@@ -55,9 +43,10 @@ function updateModeIcon() {
   modeIcon.innerHTML = isDarkMode ? darkModeIcon : lightModeIcon;
 }
 
-// Set the initial mode based on localStorage or default to dark mode
-document.addEventListener('DOMContentLoaded', function() {
-  const darkModeEnabled = localStorage.getItem('darkMode') !== 'false'; // Default to true if not set
+// Set dark mode as default and handle mode persistence
+function initializeMode() {
+  const storedMode = localStorage.getItem('darkMode');
+  const darkModeEnabled = storedMode === null ? true : storedMode === 'true';
   const modeToggle = document.getElementById('mode-toggle-checkbox');
 
   if (darkModeEnabled) {
@@ -70,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
     modeToggle.checked = false;
   }
   updateModeIcon();
-});
+}
 
 // Helper function to create an image element for a given action
 function createActionImage(action) {
