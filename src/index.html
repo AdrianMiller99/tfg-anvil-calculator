@@ -7,10 +7,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../src/styles.css">
 </head>
-<body>
+<body class="dark-mode">
 
 <header class="app-header">
   <div class="logo">TFG Anvil Calculator</div>
+  <div class="mode-toggle">
+    <div id="mode-icon"></div>
+    <label class="switch">
+      <input type="checkbox" id="mode-toggle-checkbox" checked>
+      <span class="slider round"></span>
+    </label>
+  </div>
 </header>
 
 <div class="container">
