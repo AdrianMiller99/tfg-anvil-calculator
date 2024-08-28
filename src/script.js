@@ -28,10 +28,12 @@ document.getElementById('mode-toggle-checkbox').addEventListener('change', funct
     document.body.classList.remove('light-mode');
     document.body.classList.add('dark-mode');
     localStorage.setItem('darkMode', 'true');
+    updateGitHubIconColor(true);
   } else {
     document.body.classList.remove('dark-mode');
     document.body.classList.add('light-mode');
     localStorage.setItem('darkMode', 'false');
+    updateGitHubIconColor(false);
   }
   updateModeIcon();
 });
@@ -53,10 +55,12 @@ function initializeMode() {
     document.body.classList.add('dark-mode');
     document.body.classList.remove('light-mode');
     modeToggle.checked = true;
+    updateGitHubIconColor(true);
   } else {
     document.body.classList.add('light-mode');
     document.body.classList.remove('dark-mode');
     modeToggle.checked = false;
+    updateGitHubIconColor(false);
   }
   updateModeIcon();
 }
@@ -316,6 +320,13 @@ function resetPage() {
   // Clear setup and final actions
   document.getElementById('setup-actions').innerHTML = '';
   document.getElementById('final-actions').innerHTML = '';
+}
+
+function updateGitHubIconColor(isDarkMode) {
+  const githubIcon = document.getElementById('github-icon');
+  if (githubIcon) {
+    githubIcon.style.fill = isDarkMode ? '#ffffff' : '#24292f';
+  }
 }
 
 // Call resetPage on window load

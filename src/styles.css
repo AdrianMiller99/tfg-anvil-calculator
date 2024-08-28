@@ -89,21 +89,67 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  position: -webkit-sticky; /* For Safari */
-  position: sticky;
-  top: 0;
   background-color: inherit;
   z-index: 1000;
+  position: sticky;
+  top: 0;
 }
 
 .app-header .logo {
   font-size: 32px;
   font-weight: bold;
+  flex: 1;
+  text-align: left;
+}
+
+.github-link-container {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.github-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.github-link a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: transparent;
+  transition: background-color 0.3s ease;
+}
+
+.github-link a:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .github-link a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+#github-icon {
+  transition: fill 0.3s ease;
+}
+
+.light-mode #github-icon {
+  fill: #24292f;
+}
+
+.dark-mode #github-icon {
+  fill: #ffffff;
 }
 
 .mode-toggle {
   display: flex;
   align-items: center;
+  flex: 1;
+  justify-content: flex-end;
 }
 
 #mode-icon {
@@ -262,7 +308,6 @@ select {
   pointer-events: none;
 }
 
-
 .switch input {
   opacity: 0;
   width: 0;
@@ -308,12 +353,26 @@ input:checked + .slider:before {
     max-width: 80%;
   }
 
-  .app-header .logo {
-    font-size: 24px;
+  .app-header {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 15px;
+    position: relative;  /* Remove sticky positioning for mobile */
   }
 
-  .app-header {
-    padding: 15px;
+  .app-header .logo {
+    font-size: 24px;
+    flex: none;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .mode-toggle {
+    flex: none;
+    width: 100%;
+    justify-content: center;
+    margin-top: 10px;
   }
 
   #mode-icon {
@@ -323,5 +382,11 @@ input:checked + .slider:before {
 
   .switch {
     margin-left: 4px;
+  }
+
+  .github-link-container {
+    position: static;
+    transform: none;
+    margin: 10px 0;
   }
 }
