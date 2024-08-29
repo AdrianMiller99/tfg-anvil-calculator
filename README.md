@@ -3,6 +3,9 @@
 Welcome to the TFG Anvil Calculator! This tool helps you determine the most efficient sequence of smithing actions 
 to always get a perfectly forged item in the TerraFirmaGreg modpack.
 
+Link to the tool: https://adrianmiller99.github.io/tfg-anvil-calculator/src/index.html
+
+
 ## How to Use
 
 
