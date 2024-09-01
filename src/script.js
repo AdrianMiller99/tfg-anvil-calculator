@@ -2,13 +2,9 @@ const darkModeIcon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="#ccc
 
 const lightModeIcon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="#333" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M12 1.25a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0V2a.75.75 0 0 1 .75-.75Z"/><path fill="currentColor" fill-rule="evenodd" d="M6.25 12a5.75 5.75 0 1 1 11.5 0a5.75 5.75 0 0 1-11.5 0ZM12 7.75a4.25 4.25 0 1 0 0 8.5a4.25 4.25 0 0 0 0-8.5Z" clip-rule="evenodd"/><path fill="currentColor" d="M5.46 4.399a.75.75 0 0 0-1.061 1.06l.707.707a.75.75 0 1 0 1.06-1.06l-.707-.707ZM22.75 12a.75.75 0 0 1-.75.75h-1a.75.75 0 0 1 0-1.5h1a.75.75 0 0 1 .75.75Zm-3.149-6.54a.75.75 0 1 0-1.06-1.061l-.707.707a.75.75 0 1 0 1.06 1.06l.707-.707ZM12 20.25a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1a.75.75 0 0 1 .75-.75Zm6.894-2.416a.75.75 0 1 0-1.06 1.06l.707.707a.75.75 0 1 0 1.06-1.06l-.707-.707ZM3.75 12a.75.75 0 0 1-.75.75H2a.75.75 0 0 1 0-1.5h1a.75.75 0 0 1 .75.75Zm2.416 6.894a.75.75 0 0 0-1.06-1.06l-.707.707a.75.75 0 0 0 1.06 1.06l.707-.707Z"/></svg>`;
 
-// Call this function at the end of your DOMContentLoaded event listener
-
-
 document.addEventListener('DOMContentLoaded', function() {
   initializeMode();
 
-  // Reset all other elements
   document.querySelectorAll('.action-icon').forEach(icon => {
     icon.src = '../res/empty.png';
     icon.setAttribute('data-action', '');
@@ -70,12 +66,9 @@ function createActionImage(action) {
   const img = document.createElement("img");
   img.src = `../res/${action}.png`;  // Assuming all images are named after the action
   img.alt = action;
-
-  // Capitalize the first letter of the action for the tooltip
   const capitalizedAction = action.charAt(0).toUpperCase() + action.slice(1);
   img.title = capitalizedAction;
-
-  img.classList.add("result-icon");  // Add a class for potential styling
+  img.classList.add("result-icon");
   return img;
 }
 
@@ -103,7 +96,6 @@ document.getElementById("calculate-button").addEventListener("click", function()
       instructions.push({ action, priority });
     }
   });
-  console.log("Instructions:", instructions);
 
   // Action values
   const actions = {
@@ -145,10 +137,7 @@ document.getElementById("calculate-button").addEventListener("click", function()
       }
     });
 
-    console.log("Instruction Sum:", instructionSum);
     let preTargetValue = targetValue - instructionSum;
-    console.log("Pre-Target Value:", preTargetValue);
-
     const dp = Array(preTargetValue + 1).fill(Infinity);
     dp[0] = 0;
 
@@ -210,10 +199,7 @@ document.getElementById("calculate-button").addEventListener("click", function()
   }
 
   const setupActions = calculateSetupActions(targetValue, instructions);
-  console.log("Setup Actions:", setupActions.join(", "));
-
   const sortedInstructions = sortInstructions(instructions);
-  console.log("Final Instructions:", sortedInstructions.map(i => i.action).join(", "));
 
   // Display results as images
   const setupContainer = document.getElementById("setup-actions");
@@ -244,7 +230,7 @@ function setupInstructionListener(selector) {
   const container = document.querySelector('.container');
   const popup = document.getElementById('action-popup');
   const popupContent = document.querySelector('.action-popup-content');
-  const header = document.querySelector('.app-header'); // Add this line to select the header
+  const header = document.querySelector('.app-header');
 
 
   icon.addEventListener('click', function() {
@@ -273,7 +259,7 @@ function setupInstructionListener(selector) {
     function handleOutsideClick(event) {
       if (!popupContent.contains(event.target) &&
           !icon.contains(event.target) &&
-          !header.contains(event.target)) { // Add this condition
+          !header.contains(event.target)) {
         closePopup();
       }
     }
@@ -291,8 +277,6 @@ function setupInstructionListener(selector) {
 
   // Apply tooltip to the instruction set icon on load
   applyTooltipToIcon(icon);
-
-
 }
 
 // Function to reset all inputs and selections
