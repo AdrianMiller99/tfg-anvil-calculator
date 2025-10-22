@@ -10,8 +10,12 @@ document.addEventListener('DOMContentLoaded', function() {
     icon.setAttribute('data-action', '');
   });
 
-  document.querySelectorAll('.priority').forEach(select => {
-    select.selectedIndex = 0;
+  const defaults = ['last', 'second-last', 'third-last'];
+  document.querySelectorAll('.instruction-set').forEach((set, index) => {
+    const select = set.querySelector('.priority');
+    if (select) {
+      select.value = defaults[index] || '';
+    }
   });
 
   document.getElementById('target-value').value = '';
@@ -125,81 +129,250 @@ document.getElementById("calculate-button").addEventListener("click", function()
     return bestHitAction;
   }
 
-  function calculateSetupActions(targetValue, instructions) {
-    let instructionSum = 0;
-    instructions.forEach(instr => {
-      if (instr.action === "hit") {
-        const bestHit = selectBestHit(targetValue - instructionSum, ["hit1", "hit2", "hit3"]);
-        instructionSum += actions[bestHit];
-        instr.action = bestHit;
-      } else {
-        instructionSum += actions[instr.action];
+  function displayGroupedActions(container, actions) {
+    let i = 0;
+    while (i < actions.length) {
+      const current = typeof actions[i] === "string" ? actions[i] : actions[i].action;
+      let count = 1;
+      while (i + count < actions.length &&
+             (typeof actions[i + count] === "string" ? actions[i + count] : actions[i + count].action) === current) {
+        count++;
       }
-    });
 
-    let preTargetValue = targetValue - instructionSum;
-    const dp = Array(preTargetValue + 1).fill(Infinity);
-    dp[0] = 0;
+      const wrapper = document.createElement("div");
+      wrapper.classList.add("action-with-count");
+      const img = createActionImage(current);
+      wrapper.appendChild(img);
 
-    for (let i = 0; i <= preTargetValue; i++) {
-      if (dp[i] !== Infinity) {
-        for (let action in actions) {
-          let nextValue = i + actions[action];
-          if (nextValue <= preTargetValue) {
-            dp[nextValue] = Math.min(dp[nextValue], dp[i] + 1);
+      if (count > 1) {
+        const countText = document.createElement("div");
+        countText.classList.add("action-count");
+        countText.textContent = `×${count}`;
+        wrapper.appendChild(countText);
+      }
+
+      container.appendChild(wrapper);
+      i += count;
+    }
+  }
+
+
+  function calculateSetupActions(targetValue, instructions) {
+    // --- helpers ---
+  
+    function findShortestPathTo(goal) {
+      if (goal === 0) return [];
+      const MAX_STEPS = 14;
+      const q = [[0, []]];
+      const seen = new Set([0]);
+  
+      while (q.length) {
+        const [cur, path] = q.shift();
+        if (cur === goal) return path;
+        if (path.length >= MAX_STEPS) continue;
+  
+        const candidates = Object.entries(actions)
+          .map(([a, v]) => ({ a, v, score: Math.abs(goal - (cur + v)) }))
+          .sort((x, y) => x.score - y.score);
+  
+        for (const { a, v } of candidates) {
+          const nxt = cur + v;
+          if (!seen.has(nxt)) {
+            seen.add(nxt);
+            q.push([nxt, [...path, a]]);
           }
         }
       }
+  
+      // Greedy fallback
+      let approx = [];
+      let cur = 0;
+      const LIMIT = 40;
+      for (let i = 0; i < LIMIT && cur !== goal; i++) {
+        let best = null, bestDist = Math.abs(goal - cur);
+        for (const [a, v] of Object.entries(actions)) {
+          const dist = Math.abs(goal - (cur + v));
+          if (dist < bestDist) { bestDist = dist; best = a; }
+        }
+        if (!best) break;
+        approx.push(best);
+        cur += actions[best];
+      }
+      return approx.length ? approx : ["punch"];
     }
-
-    let setupActions = [];
-    let currentValue = preTargetValue;
-
-    while (currentValue > 0) {
-      for (let action in actions) {
-        let prevValue = currentValue - actions[action];
-        if (prevValue >= 0 && dp[prevValue] === dp[currentValue] - 1) {
-          setupActions.push(action);
-          currentValue = prevValue;
-          break;
+  
+    function assignFinalHitsSmart() {
+      const finals = [];
+      finals.push(...instructions.filter(x => x.priority === "third-last"));
+      finals.push(...instructions.filter(x => x.priority === "second-last"));
+      finals.push(...instructions.filter(x => x.priority === "last"));
+  
+      const finalsAreFlexible = finals.some(f => f.action === "hit");
+      if (!finalsAreFlexible) return null;
+  
+      const nonFinals = instructions.filter(x => !finals.includes(x));
+      const nonFinalSum = nonFinals.reduce((s, i) => s + actions[i.action], 0);
+  
+      const optionsPerSlot = finals.map(f => {
+        if (f.action === "hit") return ["hit1", "hit2", "hit3"];
+        return [f.action];
+      });
+  
+      function* cartesian(arrays, idx = 0, cur = []) {
+        if (idx === arrays.length) { yield cur; return; }
+        for (const opt of arrays[idx]) {
+          yield* cartesian(arrays, idx + 1, [...cur, opt]);
         }
       }
-    }
-
-    setupActions.reverse();
-
-    return setupActions;
-  }
-
-  function sortInstructions(instructions) {
-    const last = instructions.filter(i => i.priority === 'last');
-    const secondLast = instructions.filter(i => i.priority === 'second-last');
-    const thirdLast = instructions.filter(i => i.priority === 'third-last');
-    const notLast = instructions.filter(i => i.priority === 'not-last');
-    const anyPriority = instructions.filter(i => i.priority === 'any');
-
-    let sortedInstructions = [...thirdLast, ...secondLast, ...notLast, ...last];
-
-    if (anyPriority.length > 0) {
-      const anyHits = anyPriority.map(i => i);
-
-      let insertionPoint = 0;
-      if (last.length > 0 && secondLast.length > 0) {
-        insertionPoint = sortedInstructions.length - last.length - secondLast.length;
-      } else if (last.length > 0) {
-        insertionPoint = sortedInstructions.length - last.length;
-      } else {
-        insertionPoint = sortedInstructions.length;
+  
+      let best = { setupLen: Infinity, assign: null, setupPath: null };
+  
+      for (const assignment of cartesian(optionsPerSlot)) {
+        if (!assignment.every(a => actions.hasOwnProperty(a))) continue;
+        const finalsSum = assignment.reduce((s, a) => s + actions[a], 0);
+        const remainder = targetValue - nonFinalSum - finalsSum;
+        const setupPath = findShortestPathTo(remainder);
+        const setupLen = setupPath.length;
+        if (setupLen < best.setupLen) {
+          best = { setupLen, assign: assignment, setupPath };
+          if (setupLen === 0) break;
+        }
       }
+  
+      if (best.assign) {
+        for (let i = 0; i < finals.length; i++) {
+          finals[i].action = best.assign[i];
+        }
+        return best.setupPath || [];
+      }
+      return null;
+    }
+  
+    // --- MAIN BODY ---
+  
+    // Resolve non-final "hit" placeholders quickly
+    instructions.forEach(instr => {
+      if (["last", "second-last", "third-last"].includes(instr.priority)) return;
+      if (instr.action === "hit") {
+        const choices = ["hit1", "hit2", "hit3"];
+        const pick = choices.reduce((best, a) => {
+          const v = actions[a];
+          const score = Math.abs(targetValue - v);
+          if (!best || score < best.score) return { a, score };
+          return best;
+        }, null);
+        instr.action = pick ? pick.a : "hit1";
+      }
+    });
+  
+    // Jointly assign finals
+    const precomputedSetup = assignFinalHitsSmart();
+    if (precomputedSetup !== null) {
+      return precomputedSetup; // authoritative, don’t recompute remainder
+    }
+  
+    // If no final hit placeholders, just compute normally
+    const instructionSum = instructions.reduce((s, i) => s + actions[i.action], 0);
+    const preTargetValue = targetValue - instructionSum;
+    if (preTargetValue === 0) return [];
+    return findShortestPathTo(preTargetValue);
+  }
+  
+  function sortInstructions(instructions) {
+    // Find fixed-position instructions (at most one each)
+    const last = instructions.find(i => i.priority === "last");
+    const secondLast = instructions.find(i => i.priority === "second-last");
+    const thirdLast = instructions.find(i => i.priority === "third-last");
 
-      sortedInstructions.splice(insertionPoint, 0, ...anyHits);
+    // Flexible pools
+    const flexAny = instructions.filter(i => i.priority === "any").slice();
+    const flexNotLast = instructions.filter(i => i.priority === "not-last").slice();
+
+    // Helper to take one item from an array (FIFO)
+    const take = (arr) => arr.length ? arr.shift() : null;
+
+    // Build the 3-slot tail [third-last, second-last, last]
+    const tail = [null, null, null];
+    if (thirdLast)  tail[0] = thirdLast;
+    if (secondLast) tail[1] = secondLast;
+    if (last)       tail[2] = last;
+
+    // Fill LAST slot (index 2) if empty:
+    // - Can use 'any'
+    // - Must NOT use 'not-last'
+    if (!tail[2]) {
+      const fromAny = take(flexAny);
+      if (fromAny) {
+        tail[2] = fromAny;
+      } else {
+        // No legal candidate for last; constraints unsatisfiable with provided instructions
+        // (keep going so validator can show a clear error later)
+        console.warn("sortInstructions: No legal instruction available for 'last' slot (cannot use 'not-last').");
+      }
     }
 
-    return sortedInstructions;
+    // Fill SECOND-LAST slot (index 1) if empty:
+    // - Can use 'any' or 'not-last'
+    if (!tail[1]) {
+      const candidate = take(flexAny) || take(flexNotLast);
+      if (candidate) tail[1] = candidate;
+    }
+
+    // Fill THIRD-LAST slot (index 0) if empty:
+    // - Can use 'any' or 'not-last'
+    if (!tail[0]) {
+      const candidate = take(flexAny) || take(flexNotLast);
+      if (candidate) tail[0] = candidate;
+    }
+
+    // Whatever flexible instructions remain go BEFORE the tail
+    const head = [...flexAny, ...flexNotLast];
+
+    // Return final instruction objects in order: head + tail (filter nulls just in case)
+    return [...head, ...tail.filter(Boolean)];
   }
+
+  function validateRecipe(fullSeq) {
+    const len = fullSeq.length;
+    if (len === 0) throw new Error("Empty instruction sequence!");
+
+    function logAndThrow(msg) {
+      console.group("Recipe Constraint Violation");
+      console.log("Error:", msg);
+      console.log("Full recipe:", fullSeq.map(i =>
+        typeof i === "string"
+          ? `${i} (setup)`
+          : `${i.action} (${i.priority})`
+      ));
+      console.groupEnd();
+      throw new Error(msg);
+    }
+
+    fullSeq.forEach((item, idx) => {
+      if (typeof item === "string") return; // setup step, skip
+      switch (item.priority) {
+        case "last":
+          if (idx !== len - 1) logAndThrow("'last' not in last position");
+          break;
+        case "second-last":
+          if (len >= 2 && idx !== len - 2) logAndThrow("'second-last' not in second-last position");
+          break;
+        case "third-last":
+          if (len >= 3 && idx !== len - 3) logAndThrow("'third-last' not in third-last position");
+          break;
+        case "not-last":
+          if (idx === len - 1) logAndThrow("'not-last' placed last");
+          break;
+      }
+    });
+  }
+
 
   const setupActions = calculateSetupActions(targetValue, instructions);
   const sortedInstructions = sortInstructions(instructions);
+
+  const fullRecipe = [...setupActions, ...sortedInstructions];
+  validateRecipe(fullRecipe);
 
   // Display results as images
   const setupContainer = document.getElementById("setup-actions");
@@ -209,15 +382,11 @@ document.getElementById("calculate-button").addEventListener("click", function()
   setupContainer.innerHTML = "";
   finalContainer.innerHTML = "";
 
-  // Append setup actions as images
-  setupActions.forEach(action => {
-    setupContainer.appendChild(createActionImage(action));
-  });
+  // Group and append setup actions
+  displayGroupedActions(setupContainer, setupActions);
 
-  // Append final instructions as images
-  sortedInstructions.forEach(instr => {
-    finalContainer.appendChild(createActionImage(instr.action));
-  });
+  // Group and append final instructions
+  displayGroupedActions(finalContainer, sortedInstructions);
 
   // Show the result card with a transition
   const resultCard = document.getElementById("result");
@@ -279,13 +448,13 @@ function setupInstructionListener(selector) {
   applyTooltipToIcon(icon);
 }
 
-// Function to reset all inputs and selections
 function resetPage() {
   // Reset target value input
   document.getElementById('target-value').value = '';
 
   // Reset instruction sets
-  document.querySelectorAll('.instruction-set').forEach(set => {
+  const defaults = ['last', 'second-last', 'third-last'];
+  document.querySelectorAll('.instruction-set').forEach((set, index) => {
     const actionIcon = set.querySelector('.action-icon');
     actionIcon.src = '../res/empty.png';
     actionIcon.setAttribute('data-action', '');
@@ -293,7 +462,7 @@ function resetPage() {
 
     const prioritySelect = set.querySelector('.priority');
     if (prioritySelect) {
-      prioritySelect.selectedIndex = 0;
+      prioritySelect.value = defaults[index] || '';
     }
   });
 
@@ -320,6 +489,3 @@ window.addEventListener('load', resetPage);
 setupInstructionListener('.instruction-set-1');
 setupInstructionListener('.instruction-set-2');
 setupInstructionListener('.instruction-set-3');
-
-
-

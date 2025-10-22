@@ -217,6 +217,35 @@ button:hover {
   color: inherit;
 }
 
+/* Horizontal layout for instruction sets */
+#instructions {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 20px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.instruction-set {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.instruction-set select {
+  text-align: center;
+  text-align-last: center;
+}
+
+/* Spacing between the section title and instructions */
+#instructions-section h2 {
+  width: 100%;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
 /* Adjusting image size within the instruction section */
 .instruction-set .action-icon {
   width: 64px;
@@ -235,16 +264,6 @@ select {
   font-size: 14px;
   border-radius: 4px;
   border: 1px solid inherit;
-}
-
-.instruction-set {
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-}
-
-.instruction-set img {
-  margin-right: 10px;
 }
 
 .action-icon {
@@ -389,4 +408,26 @@ input:checked + .slider:before {
     transform: none;
     margin: 10px 0;
   }
+
+  #instructions {
+    flex-direction: column;  /* stack vertically on mobile */
+    align-items: center;
+  }
+}
+
+.action-with-count {
+  position: relative; /* new */
+  display: inline-block; /* shrink-wrap to image size */
+  margin: 5px;
+}
+
+.action-count {
+  position: absolute; /* new */
+  bottom: 2px;   /* adjust as needed */
+  right: 2px;    /* adjust as needed */
+  font-size: 0.9em;
+  color: #fff;
+  background: rgba(0,0,0,0.5); /* optional: makes the text readable */
+  padding: 1px 4px;
+  border-radius: 2px;
 }
